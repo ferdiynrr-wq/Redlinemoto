@@ -1,0 +1,16 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{uid} {
+      // Kullanıcı yalnızca kendi profilini yazabilir.
+      allow create: if request.auth != null && request.auth.uid == uid;
+      allow update, delete: if request.auth != null && request.auth.uid == uid;
+
+      // Üye listesi için giriş yapan kullanıcılar okuyabilir.
+      // Gerçek uygulamada phone/plate alanlarını ayrı bir private dokümana
+      // taşımanız ve yalnızca uygun kişilere açmanız önerilir.
+      allow read: if request.auth != null;
+    }
+  }
+}
